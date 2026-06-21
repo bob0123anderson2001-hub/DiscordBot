@@ -65,4 +65,4 @@ client.once("ready", () => {
     setInterval(poll, 2000);
 });
 
-client.login("MTQ5Nzk4MjcyOTA4ODY2MzcwMg.GBVgI1.321fUdSIJQm7103WEj-5QVrcuoDwD0YOqmgzjY");
+client.login(process.env.DISCORD_TOKEN);
