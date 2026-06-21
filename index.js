@@ -1,3 +1,5 @@
+require("dotenv").config();
+
 const { Client, GatewayIntentBits } = require("discord.js");
 const axios = require("axios");
 
@@ -9,12 +11,12 @@ const client = new Client({
     ]
 });
 
-const NORLINK_URL = "https://script.google.com/macros/s/AKfycbyZx9Ldy12lEnxW4uEkLKsNHIFugPpYcShn40PhQVzZ8jxhDDsIKNOiTxYgvhOwXlJn/exec";
-const CHANNEL_ID = "1518112866002141306";
+const NORLINK_URL = process.env.NORLINK_URL;
+const CHANNEL_ID = process.env.CHANNEL_ID;
 
 let lastCount = 0;
 
-// SEND Discord → NORLINK
+// Discord → NORLINK
 client.on("messageCreate", async (message) => {
     if (message.author.bot) return;
     if (message.channel.id !== CHANNEL_ID) return;
@@ -26,43 +28,41 @@ client.on("messageCreate", async (message) => {
             content: message.content
         });
     } catch (err) {
-        console.log("Send error:", err.message);
+        console.log("NORLINK send error:", err.message);
     }
 });
 
-// POLL NORLINK → Discord
-async function poll() {
+// NORLINK → Discord
+async function pollNORLINK() {
     try {
         const res = await axios.get(NORLINK_URL);
         const data = res.data;
 
         if (!data.messages) return;
 
+        const channel = await client.channels.fetch(CHANNEL_ID);
+
         if (data.messages.length > lastCount) {
             const newMessages = data.messages.slice(lastCount);
 
-            const channel = client.channels.cache.get(CHANNEL_ID);
-
             for (const msg of newMessages) {
-                // prevent echo loop
                 if (msg.platform === "discord") continue;
 
-                if (channel) {
-                    channel.send(`**[${msg.platform}] ${msg.author}:** ${msg.content}`);
-                }
+                channel.send(`**[${msg.platform}] ${msg.author}:** ${msg.content}`);
             }
 
             lastCount = data.messages.length;
         }
+
     } catch (err) {
-        console.log("Poll error:", err.message);
+        console.log("NORLINK poll error:", err.message);
     }
 }
 
 client.once("ready", () => {
-    console.log(`Logged in as ${client.user.tag}`);
+    console.log(`NORLINK online as ${client.user.tag}`);
 
-    setInterval(poll, 2000);
+    setInterval(pollNORLINK, 2000);
 });
 
 client.login(process.env.DISCORD_TOKEN);
