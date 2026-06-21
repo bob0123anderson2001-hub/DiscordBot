@@ -1,0 +1,19 @@
+{
+  "name": "norlink-bot",
+  "version": "1.0.0",
+  "description": "NORLINK cross-platform Discord bridge bot",
+  "main": "index.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node index.js"
+  },
+  "dependencies": {
+    "axios": "^1.6.0",
+    "discord.js": "^14.16.3",
+    "dotenv": "^16.4.5"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
